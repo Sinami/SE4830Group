@@ -5,4 +5,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
-	return HttpResponse('Boo!')
+	return render(request, 'hypergo/pages/index.html')
+
+def registration(request):
+	return render(request, 'hypergo/pages/registration.html')
+
+def contact(request):
+	return render(request, 'hypergo/pages/contact.html')
+
+def management(request):
+	return render(request, 'hypergo/pages/management.html')

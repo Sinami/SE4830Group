@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>goNow</title>
+    <title>HyperGO</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -37,7 +38,7 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <![endif]-->
-    <script src="../../js/ie-emulation-modes-warning.js"></script>
+    <script src="{% static 'hypergo/js/ie-emulation-modes-warning.js' %}"></script>
 </head>
 <body>
 <!--  HPER GO Header  -->
@@ -58,13 +59,13 @@
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 					</button>
-					<a class="navbar-brand" href="#" ><img src="../../images/uno_logo.png" height="40" width="40" align="top"></a>
+					<a class="navbar-brand" href="#" ><img src="{% static 'hypergo/images/uno_logo.png' %}" height="40" width="40" align="top"></a>
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li class="active"><a href="#">Go Home</a></li>
-						<li><a href="#about">Go Reservation</a></li>
-						<li><a href="#contact">Go Help</a></li>
+						<li class="active"><a href="bcollett.com">Go Home</a></li>
+						<li><a href="#reservation">Go Reservation</a></li>
+						<li><a href="bcollett.com/contact">Go Help</a></li>
 
 
 <!--					When signed in this will be an option
