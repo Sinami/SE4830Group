@@ -6,9 +6,7 @@ urlpatterns = [
         #ex: /groupTracker
         url(r'^$', views.index, name='index'),
         url(r'^registration/$', views.registration, name='registration'),
-        url(r'^contact/$', views.contact, name='contact'),
+        url(r'^contact/', views.contact, name='contact'),
         url(r'^management/$', views.management, name='management'),
-        #url(r'^showAll/$', views.showAll, name='showAll'),
-        #url(r'^delete/$', views.delete, name='delete'),
-        #url(r'^(?P<group_id>[0-9]+)/showAll/$', views.showAll, name='showAll'),
+        url(r'(?P<user_id>[0-9]+)/reservation/', views.reservation, name='reservation'),
 ]
