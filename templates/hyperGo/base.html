@@ -43,6 +43,7 @@
 <body>
 <!--  HPER GO Header  -->
 		<nav class="navbar navbar-inverse navbar-fixed-top">
+            <label id="isAdmin" class="hidden" value=""></label>
 			<div class="container">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -63,7 +64,7 @@
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li class="active"><a href="{% url 'SE4830Group:index' %}">Go Home</a></li>
+						<li><a href="{% url 'SE4830Group:index' %}">Go Home</a></li>
 						<li><a href="{% url 'reservation' %}">Go Reservation</a></li>
 						<li><a href="{% url 'contact' %}">Go Help</a></li>
 
