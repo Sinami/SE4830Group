@@ -18,6 +18,6 @@ def contact(request):
 def management(request):
 	return render(request, 'hypergo/pages/management.html')
 
-@login_required
+#@login_required
 def reservation(request):
-	return HttpResponse('In Progress')
+	return render(request, 'hypergo/pages/reservation.html')

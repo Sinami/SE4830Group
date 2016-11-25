@@ -1,5 +1,12 @@
-		<!-- panel for status view  -->
-		<div class="container-panel container theme-showcase" role="main">
+{% extends 'hypergo/base.html' %}
+{% load static %}
+{% block content %}
+		<!-- Custom styles for this template -->
+		<link href="{% static 'hypergo/css/index.css' %}" rel="stylesheet">
+
+
+
+    <div class="container-panel container theme-showcase" role="main">
 			<div class="row">
 				<div class="col-md-6">
 					<div class="panel panel-default">
@@ -9,25 +16,7 @@
 									<h3 class="panel-title">Reservations</h3>
 								</div>
 								<div class="panel-body">
-									<p>This will be the information about the user's <b>reservations</b>. I dont know what information will go here
-											yet but it will be awesome. I am just trying to fill up space with a random entry.
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- panel for reservation view  -->
-				<div class="col-md-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<div class="panel panel-primary">
-								<div class="panel-heading">
-									<h3 class="panel-title">Status</h3>
-								</div>
-								<div class="panel-body">
-									<p>This will be the information about the user's <b>status</b>. I dont know what information will go here
+									<p>This will be the information about the user's <b>reservations</b>. I don't know what information will go here
 											yet but it will be awesome. I am just trying to fill up space with a random entry.
 									</p>
 								</div>
@@ -36,4 +25,5 @@
 					</div>
 				</div>
 			</div>
-		</div>
+    </div>
+{% endblock %}
