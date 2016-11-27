@@ -6,18 +6,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
-	return render(request, 'hypergo/pages/index.html')
+	return render(request, 'hyperGo/pages/index.html')
 
 def registration(request):
-	return render(request, 'hypergo/pages/registration.html')
+	return render(request, 'hyperGo/pages/registration.html')
 
 def contact(request):
-	return render(request, 'hypergo/pages/contact.html')
+	return render(request, 'hyperGo/pages/contact.html')
 
 @login_required
 def management(request):
-	return render(request, 'hypergo/pages/management.html')
+	return render(request, 'hyperGo/pages/management.html')
 
 #@login_required
 def reservation(request):
-	return render(request, 'hypergo/pages/reservation.html')
+	return render(request, 'hyperGo/pages/reservation.html')
