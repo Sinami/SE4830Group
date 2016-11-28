@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>HyperGO</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+
+    <!-- Custom Fonts s-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Custom CSS
+    <link rel="stylesheet" href="css/creative.css" type="text/css">-->
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <![endif]-->
+    <script src="{% static 'hypergo/js/ie-emulation-modes-warning.js' %}"></script>
+</head>
+<body>
+<!--  HPER GO Header  -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+            <label id="isAdmin" class="hidden" value=""></label>
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					</button>
+					<a class="navbar-brand" href="#" >HPER GO</a>
+				</div>
+
+			</div>
+		</nav>
+
+		<!-- Nav Bar -->
+		<nav class="nav navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					</button>
+					<a class="navbar-brand" href="#" ><img src="{% static 'hypergo/images/uno_logo.png' %}" height="40" width="40" align="top"></a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="{% url 'SE4830Group:index' %}">Go Home</a></li>
+                        <li id="management_link" class="hidden"><a href="{% url 'management' %}">Go Management</a></li>
+						<li><a href="{% url 'reservation' %}">Go Reservation</a></li>
+						<li><a href="{% url 'contact' %}">Go Help</a></li>
+
+
+<!--					When signed in this will be an option
+
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">#Username <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Your Profile</a></li>
+								<li><a href="#">Your Reservations</a></li>
+								<li><a href="#">Your History</a></li>
+								<li><a href="#">Settings</a></li>
+							</ul>
+						</li>
+-->
+					</ul>
+
+					<!--  To be replaced When signed in  -->
+					<form class="navbar-form navbar-right">
+						<div class="form-group">
+							<input type="text" placeholder="Email" class="form-control">
+						</div>
+						<div class="form-group">
+							<input type="password" placeholder="Password" class="form-control">
+						</div>
+						<button type="submit" class="btn btn-success">Sign in</button>
+					</form>
+				</div>
+			</div>
+		</nav>
+{% block content %}
+    <!-- Content  goes here. -->
+{% endblock %}
+
+<!-- footer to be changed  -->
+    <div class="container">
+        <footer>
+            <p>&copy; 2016 Company, Inc.</p>
+        </footer>
+    </div>
+</body>
+</html>

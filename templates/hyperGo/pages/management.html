@@ -1,0 +1,20 @@
+{% extends 'hyperGo/base.html' %}
+{% load static %}
+{% block content %}
+		<link href="{% static 'static/css/management.css' %}" rel="stylesheet">
+
+		<div class="container">
+			<div class="row row-offcanvas row-offcanvas-right">
+				<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+					<div class="list-group">
+						<a href="#" class="list-group-item active"><b>Administrative Tools:</b></a>
+						<a href="#" class="list-group-item">Register new members</a>
+						<a href="#" class="list-group-item">Current Reservations</a>
+						<a href="#" class="list-group-item">Schedule management</a>
+						<a href="#" class="list-group-item">Black list management</a>
+					</div>
+				</div><!--/.sidebar-offcanvas-->
+				
+			</div><!--/row-->
+        </div>
+			{% endblock %}

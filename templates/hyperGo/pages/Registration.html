@@ -1,0 +1,75 @@
+{% extends 'hyperGo/base.html' %}
+{% load static %}
+{% block content %}
+<!-- Custom styles fors this template -->
+    <link href="{% static 'hypergo/css/theme.css' %}" rel="stylesheet">
+
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>Registration</h1>
+        <p>Complete the form to register for HPER GO.</p>
+      </div>
+<div class="col-md-6">
+<form>
+<table style="height: 360px;" width="300">
+<tbody>
+<tr>
+<td align="left">NU ID:</td>
+<td align="left"><input name="nuid" type="text" /></td>
+</tr>
+<tr>
+<td align="left">First Name:</td>
+<td align="left"><input name="first" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Last Name:</td>
+<td align="left"><input name="last" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Gender:</td>
+<td align="left"><input checked="checked" name="gender" type="radio" value="male" /> Male <input name="gender" type="radio" value="female" /> Female</td>
+</tr>
+<tr>
+<td align="left">Date of Birth:</td>
+<td><input name="dob" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Address 1:</td>
+<td align="left"><input name="add1" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Address 2:</td>
+<td align="left"><input name="add2" type="text" /></td>
+</tr>
+<tr>
+<td align="left">City:</td>
+<td align="left"><input name="city" type="text" /></td>
+</tr>
+<tr>
+<td align="left">State:</td>
+<td align="left"><input name="state" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Zip Code:</td>
+<td align="left"><input name="zip" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Phone:</td>
+<td align="left"><input name="phone" type="text" /></td>
+</tr>
+<tr>
+<td align="left">E-Mail:</td>
+<td align="left"><input name="email" type="text" /></td>
+</tr>
+</tbody>
+</table>
+<input type="button" value="Cancel" class="btn btn-lg btn-danger"></button> <input type="button" value="Create" class="btn btn-lg btn-success"></button></form>
+</div>
+
+
+</div> <!-- /container -->
+
+
+{% endblock %}
