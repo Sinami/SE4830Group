@@ -1,1 +1,518 @@
+#!/usr/bin/env perl
 
+use lib '/home/jeffreyallen/perl5/lib/perl5';
+use Modern::Perl;
+use Mojolicious::Lite;
+use DBI;
+
+my $dbh = DBI->connect("dbi:SQLite:dbname=blacklist.db");
+
+# Home Page
+get '/' => sub {
+    my $self = shift;
+    $self->render('homepage');
+};
+
+# Route for Create Account Page
+get '/create' => sub {
+    my $self = shift;
+    $self->render('create');
+};
+
+# Route for Make Reservation Page
+get '/make' => sub {
+    my $self = shift;
+    $self->render('make');
+};
+
+# Route for See Reservations Page
+get '/see' => sub {
+    my $self = shift;
+
+    my $query = "select * from reservations";
+    my $qh = $dbh->prepare($query);
+    my @data;
+    $qh->execute();
+
+    $qh->bind_columns(\my($id,$first,$last,$room,$date,$time));
+
+    while($qh->fetch()){
+        my $record = {id => $id, first => $first, last => $last, room => $room, date => $date, time => $time};
+        push @data, $record;
+    }
+    $qh->finish;
+
+    $self->stash(names => \@data);
+
+    $self->render('see');
+};
+
+# Route for View Blacklist Page
+get '/viewblacklist' => sub {
+    my $self = shift;
+
+    my $query = "select * from blacklist order by first";
+    my $qh = $dbh->prepare($query);
+    my @data;
+    $qh->execute();
+
+    $qh->bind_columns(\my($id,$first,$last,$nuid,$reason));
+
+    while($qh->fetch()){
+        my $record = {id => $id, first => $first, last => $last, nuid => $nuid, reason => $reason};
+        push @data, $record;
+    }
+    $qh->finish;
+
+    $self->stash(names => \@data);
+    $self->render('viewblacklist');
+};
+
+# Route for Add To Blacklist Page
+get '/addblacklist' => sub {
+    my $self = shift;
+
+    $self->render('addblacklist');
+};
+
+# Route to Process Adding to Blacklist Form
+any '/processaddbl' => sub {
+    my $self = shift;
+    my $f = $self->req->query_params->param('first');
+    my $l = $self->req->query_params->param('last');
+    my $n = $self->req->query_params->param('nuid');
+    my $r = $self->req->query_params->param('reason');
+
+    my $query = "select exists(select 1 from accounts where first='$f' and last='$l' limit 1);";
+    my $qh = $dbh->prepare($query);
+    $qh->execute();
+    my @record = $qh->fetchrow_array;
+    my $result = $record[0];
+    
+    if($result eq 1){
+        my $query = "insert into blacklist values (null,'$f','$l','$n','$r')";
+        $dbh->do($query);
+        $self->render('blacklistsuccess');
+    }
+
+    else{
+        $self->render('blacklistfail');
+    }
+};
+
+# Route to Process Adding to Reservation Form
+any '/processmake' => sub {
+    my $self = shift;
+    my $f = $self->req->query_params->param('first');
+    my $l = $self->req->query_params->param('last');
+    my $r = $self->req->query_params->param('room');
+    my $d = $self->req->query_params->param('date');
+    my $t = $self->req->query_params->param('time');
+    
+    my $query = "select exists(select 1 from accounts where first='$f' and last='$l' limit 1);";
+    my $qh = $dbh->prepare($query);
+    $qh->execute();
+    my @record = $qh->fetchrow_array;
+    my $result = $record[0];
+    
+    if($result eq 1){
+        my $check = "select exists(select 1 from blacklist where first='$f' and last='$l' limit 1);";
+        my $q = $dbh->prepare($check);
+        $q->execute();
+        my @blArr = $q->fetchrow_array;
+        my $bl = $blArr[0];
+
+        if($bl eq 1){
+            $self->render('blacklisted');
+        }
+
+        else{
+            my $query = "insert into reservations values (null,'$f','$l','$r','$d','$t')";
+            $dbh->do($query);
+            $self->render('reservationsuccess');
+        }
+    }
+
+    else{
+        $self->render('reservationfail');
+    }
+};
+
+# Route to Process Creating Account Form
+any '/processcreate' => sub {
+    my $self = shift;
+    my $n = $self->req->query_params->param('nuid');
+    my $f = $self->req->query_params->param('first');
+    my $l = $self->req->query_params->param('last');
+    my $g = $self->req->query_params->param('gender');
+    my $d = $self->req->query_params->param('dob');
+    my $a1 = $self->req->query_params->param('add1');
+    my $a2 = $self->req->query_params->param('add2');
+    my $c = $self->req->query_params->param('city');
+    my $s = $self->req->query_params->param('state');
+    my $z = $self->req->query_params->param('zip');
+    my $p = $self->req->query_params->param('phone');
+    my $e = $self->req->query_params->param('email');
+    
+    my $query = "select exists(select 1 from accounts where nuid='$n' limit 1);";
+    my $qh = $dbh->prepare($query);
+    $qh->execute();
+    my @record = $qh->fetchrow_array;
+    my $result = $record[0];
+
+    my @errors;
+    my $validated = 1;
+    
+    # If account already exists
+    if($result eq 1){
+        $self->render('accountfail');
+    }
+    
+    else{
+        # Check First Name
+        if($f !~ m/^\D+$/){
+            push @errors, "Invalid First Name";
+            $validated = 0;
+        }
+
+        # Check Last Name
+        if($l !~ m/^\D+$/){
+            push @errors, "Invalid Last Name";
+            $validated = 0;
+        }
+
+        # Check DOB
+        if($d !~ m/^\d{1,2}[\/]\d{1,2}[\/](?:\d{2}|\d{4})$/){
+            push @errors, "Invalid Date of Birth";
+            $validated = 0;
+        }
+
+        # Check City
+        if($c !~ m/^\D+$/){
+            push @errors, "Invalid City";
+            $validated = 0;
+        }
+
+        # Check State
+        if($s !~ m/^\D+$/){
+            push @errors, "Invalid State";
+            $validated = 0;
+        }
+
+        # Check Phone
+        if($p =~ m/[(](\d{3})[)].?(\d{3}).?(\d{4})$/){
+            $p = $1 . $2 . $3;
+        }else{
+            push @errors, "Invalid Phone Number";
+            $validated = 0;
+        }
+
+        # Email Validation
+        if($e !~ m/^[0-9a-zA-Z](?:[.\w]*[0-9a-zA-Z_+])*@(?:[0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/){
+            push @errors, "Invalid Email Address";
+            $validated = 0;
+        }
+        
+        # If errors exist
+        if($validated eq 0){
+            $self->render(text => 'FAIL!');
+        }
+        
+        # Account is good and can be created
+        else{
+            my $query = "insert into accounts values (null,'$n','$f','$l','$g','$d','$a1','$a2','$c','$s','$z','$p','$e')";
+            $dbh->do($query);
+            $self->render('accountsuccess');
+        }
+    }
+};
+
+# Default Route for Missing Page
+any '*' => sub {
+    my $self = shift;
+    $self->rendered(404);
+    $self->render('missing');
+};
+
+app->start;
+
+__DATA__
+@@ homepage.html.ep
+% layout 'skeleton';
+% title 'Homepage';
+<h2>Welcome to HPER Go!</h2>
+<img src="http://www.unomaha.edu/student-life/_img/hper-intruder" alt="HPER"
+style="width:700px;height:300px;">
+<p>HPER Go allows UNO Faculty and Students to reserve rooms and courts for a duration of
+time. Use the links on the top of the page to navigate the site and make a
+reservation.</p>
+<p>Our current Hours of Operation are listed below:</p>
+<h3>Fall and Spring</h3>
+<p>Monday-Thursday: 6am to 11pm</p>
+<p>Friday: 6am to 9pm</p>
+<p>Satuday: 8am to 8pm</p>
+<p>Sunday: 10am to 10pm</p>
+<h3>Summer</h3>
+<p>Monday-Friday: 6am to 9pm</p>
+<p>Saturday-Sunday: 10am to 6pm</p>
+
+@@ create.html.ep
+% layout 'skeleton';
+% title 'Create Account';
+<h2>Create Your Account</h2>
+<form method="get" action="<%= url_for('/processcreate') %>">
+<table style="height: 360px;" width="300px">
+<tbody>
+<tr>
+<td align="left">NU ID:</td>
+<td align="left"><input name="nuid" type="number" min="10000000" max="99999999" required /> </td>
+</tr>
+<tr>
+<td align="left">Password:</td>
+<td align="left"><input name="password" type="password" required /></td>
+</tr>
+<tr>
+<td align="left">First Name:</td>
+<td align="left"><input name="first" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Last Name:</td>
+<td align="left"><input name="last" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Gender:</td>
+<td align="left"><input checked="checked" name="gender" type="radio" value="male" /> Male
+<input name="gender" type="radio" value="female" /> Female</td>
+</tr>
+<tr>
+<td align="left">Date of Birth:</td>
+<td><input name="dob" type="text" /></td>
+</tr>
+<tr>
+<td align="left">Address 1:</td>
+<td align="left"><input name="add1" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Address 2:</td>
+<td align="left"><input name="add2" type="text" /></td>
+</tr>
+<tr>
+<td align="left">City:</td>
+<td align="left"><input name="city" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">State:</td>
+<td align="left"><input name="state" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Zip Code:</td>
+<td align="left"><input name="zip" type="number" min="10000" max="99999" required /></td>
+</tr>
+<tr>
+<td align="left">Phone:</td>
+<td align="left"><input name="phone" type="tel" title="Use Format: (XXX)XXX-XXXX" required /></td>
+</tr>
+<tr>
+<td align="left">E-Mail:</td>
+<td align="left"><input name="email" type="email" required /></td>
+</tr>
+</tbody>
+</table>
+<input type="reset" value="Cancel"></button> <input
+type="submit" name="sb"></button></form>
+
+@@ make.html.ep
+% layout 'skeleton';
+% title 'Make Reservation';
+<h2>Make A Reservation</h2>
+<form method="get" action="<%= url_for('/processmake') %>">
+<table style="height: 250px;" width="300px">
+<tbody>
+<tr>
+<td align="left">First Name:</td>
+<td align="left"><input name="first" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Last Name:</td>
+<td align="left"><input name="last" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Room Number:</td>
+<td align="left"><input name="room" type="number" required /></td>
+</tr>
+<tr>
+<td align="left">Date:</td>
+<td align="left"><input name="date" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Time Frame:</td>
+<td align="left"><input name="time" type="text" required /><br>(Ex: 2pm to 4pm)</td>
+</tr>
+</tbody>
+</table>
+<input type="reset" value="Cancel"</button> <input
+type="submit" name="sb"</button></form><br><br>
+<img
+src="https://s-media-cache-ak0.pinimg.com/564x/6a/fb/51/6afb51a896fad37bcacf271172be5b97.jpg"
+alt="Map">
+<p>(Placeholder Map)</p>
+
+@@ see.html.ep
+% layout 'skeleton';
+% title 'See Reservations';
+<h2>See Reservations</h2>
+<style>
+    table,td,th { border: solid 1px black; border-collapse: collapse; }
+    td,th { padding: 3px 7px 2px 7px; }
+    th { background-color: black; color: white; cursor: pointer; }
+</style>
+<table style="height: 100px; width: 400px;">
+<thead>
+<tr>
+<th date-sort="string">First</th>
+<th data-sort="string">Last</th>
+<th data-sort="string">Room</th>
+<th data-sort="string">Date</th>
+<th data-sort="string">Time</th>
+</tr>
+</thead>
+<tbody>
+<% for my $thing ( sort @$names ) { %>
+<tr>
+<td> <%= $$thing{first} %> </td>
+<td> <%= $$thing{last} %> </td>
+<td> <%= $$thing{room} %> </td>
+<td> <%= $$thing{date} %> </td>
+<td> <%= $$thing{time} %> </td>
+</tr>
+<% } %>
+</tbody>
+</table>
+
+@@ viewblacklist.html.ep
+% layout 'skeleton';
+% title 'View Blacklist';
+<h2>Blacklist</h2>
+<style>
+    table,td,th { border: solid 1px black; border-collapse: collapse; }
+    td,th { padding: 3px 7px 2px 7px; }
+    th { background-color: black; color: white; cursor: pointer; }
+</style>
+<table id="table">
+<thead>
+<tr>
+<th data-sort="string">First</th>
+<th data-sort="string">Last</th>
+<th data-sort="string">Reason</th>
+</tr>
+</thead>
+<tbody>
+<% for my $thing ( sort @$names ) { %>
+<tr>
+<td> <%= $$thing{first} %> </td>
+<td> <%= $$thing{last} %> </td>
+<td> <%= $$thing{reason} %> </td>
+<% } %>
+</tbody>
+</table>
+
+@@ addblacklist.html.ep
+% layout 'skeleton';
+% title 'Add To Blacklist';
+<h2>Add To Blacklist</h2>
+<form method="get" action="<%= url_for('/processaddbl') %>">
+<table style="height:150px; width="200px;">
+<tbody>
+<tr>
+<td align="left">First Name:</td>
+<td align="left"><input name="first" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">Last Name:</td>
+<td align="left"><input name="last" type="text" required /></td>
+</tr>
+<tr>
+<td align="left">NU ID:</td>
+<td align="left"><input name="nuid" type="number" min="10000000" max="99999999" required /></td>
+</tr>
+<tr>
+<td align="left">Reason:</td>
+<td align="left"><input name="reason" type="text" value="N/A" required /></td>
+</tr>
+</tbody>
+</table>
+<input type="submit" name="sb"</button><input type="reset" value="Cancel"</button>
+</form>
+
+@@ blacklistsuccess.html.ep
+% title 'Success!';
+The blacklist has been updated.
+<form action="<%= url_for('/viewblacklist') %>">
+<input type="submit" value="View Blacklist" />
+</form>
+
+@@ blacklistfail.html.ep
+% title 'Fail!';
+That name cannot be added to the blacklist.
+The account does not exist!
+<form action="<%= url_for('/addblacklist') %>">
+<input type="submit" value="Go Back" />
+</form>
+
+@@ reservationsuccess.html.ep
+% title 'Success!';
+Your reservation has been confirmed.
+<form action="<%= url_for('/see') %>">
+<input type="submit" value="View Reservations" />
+</form>
+
+@@ reservationfail.html.ep
+% title 'Fail!';
+The reservation cannot be made!
+You do not have an account!
+<form action="<%= url_for('/create') %>">
+<input type="submit" value="Create An Account" />
+</form>
+
+@@ accountsuccess.html.ep
+% title 'Success!';
+Your account has been created.
+<form action="<%= url_for('/') %>">
+<input type="submit" value="Go To Homepage" />
+</form>
+
+@@ accountfail.html.ep
+% title 'Fail!';
+Your account cannot be created.
+Your NUID is already registered!
+<form action="<%= url_for('/') %>">
+<input type="submit" value="Go To Homepage" />
+</form>
+
+@@ blacklisted.html.ep
+% title 'Fail!';
+The reservation cannot be made.<br>
+Your account is suspended!
+<form action="<%= url_for('/') %>">
+<input type="submit" value="Go To Homepage" />
+</form>
+
+@@ missing.html.ep
+% layout 'skeleton';
+% title 'Page Not Found';
+<img src="http://www.observerbd.com/files/page-not-found.png"
+alt="Not Found!" style="width:400px;height:200px;">
+
+@@ layouts/skeleton.html.ep
+<!DOCTYPE html>
+<html><head><title><%= $title %></title><meta charset="utf-8"></head><body>
+<img src="http://www.unomaha.edu/university-communications/_files/img/uno.png"
+alt="uno" style="width:75px;height:50px;"><font size="10"<b>  HPER Go</b></font><br>
+<a href="<%= url_for('/') %>">Home</a>
+<a href="<%= url_for('/create') %>">Create Your Account</a>
+<a href="<%= url_for('/make') %>">Make A Reservation</a>
+<a href="<%= url_for('/see') %>">See Reservations</a>
+<a href="<%= url_for('/viewblacklist')%>">View Blacklist</a>
+<a href="<%= url_for('/addblacklist')%>">Add To Blacklist</a>
+<br><br>
+<%= content %></body></html>
